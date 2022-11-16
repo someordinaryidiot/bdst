@@ -1,6 +1,5 @@
-# bdst
+# bloated directory size tester
 
-## features
 <details closed>
 <summary>features</summary>
 
