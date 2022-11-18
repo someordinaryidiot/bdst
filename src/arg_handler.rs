@@ -11,8 +11,6 @@ struct Arguments {
     dirs_l: String,
     size_s: String,
     size_l: String,
-    path_s: String,
-    path_l: String,
 }
 
 struct ArgsDone {
@@ -43,8 +41,6 @@ pub fn handle(args: Vec<String>) -> () {
         dirs_l: String::from("--directories"),
         size_s: String::from("-s"),
         size_l: String::from("--size"),
-        path_s: String::from("-p"),
-        path_l: String::from("--path"),
     };
 
     let mut args_done = ArgsDone {
@@ -55,32 +51,31 @@ pub fn handle(args: Vec<String>) -> () {
         size: false,
     };
 
-    let mut is_path = false;
     let mut got_path = false;
     let mut counter: u16 = 0;
     for arg in args {
         if counter > 0 {
             if arg == args2.help_s || arg == args2.help_l {
+                println!("Help:");
                 println!(
-                    "Help:
-    {} {}: shows this help message
-    {} {}: disables formatting for the output (f.e. \'files: 12\' -> \'12\')
-    {} {}: shows the number of files
-    {} {}: shows the number of directories
-    {} {}: shows the size
-    {} {}: specifies the path for the directory to scan (usage: bdst --path /your/folder)",
-                    args2.help_s,
-                    args2.help_l,
-                    args2.noformatting_s,
-                    args2.noformatting_l,
-                    args2.files_s,
-                    args2.files_l,
-                    args2.dirs_s,
-                    args2.dirs_l,
-                    args2.size_s,
-                    args2.size_l,
-                    args2.path_s,
-                    args2.path_l,
+                    "    {} {}: shows this help message",
+                    args2.help_s, args2.help_l
+                );
+                println!(
+                    "    {} {}: disables formatting for the output (f.e. \'files: 12\' -> \'12\')",
+                    args2.noformatting_s, args2.noformatting_l
+                );
+                println!(
+                    "    {} {}: shows the number of files",
+                    args2.files_s, args2.files_l
+                );
+                println!(
+                    "    {} {}: shows the number of directories",
+                    args2.dirs_s, args2.dirs_l
+                );
+                println!(
+                    "    {} {}: shows the size of the directory",
+                    args2.size_s, args2.size_l
                 );
                 process::exit(0);
             } else if arg == args2.noformatting_s || arg == args2.noformatting_l {
@@ -91,20 +86,15 @@ pub fn handle(args: Vec<String>) -> () {
                 args_done.dirs = true;
             } else if arg == args2.size_s || arg == args2.size_l {
                 args_done.size = true;
-            } else if arg == args2.path_s || arg == args2.path_l {
-                is_path = true;
-            } else {
-                if is_path {
-                    args_done.path = arg;
-                    is_path = false;
-                    got_path = true;
-                } else {
-                    println!(
-                        "bdst: arg_handler: handle: Unknown {}th argument `{}`! ",
-                        counter, arg
-                    );
-                    process::exit(1);
-                }
+            } else if !arg.contains("-") {
+                args_done.path = arg;
+                got_path = true;
+            } else if !got_path {
+                println!(
+                    "bdst: arg_handler: handle: Unknown {}th argument `{}`! ",
+                    counter, arg
+                );
+                process::exit(1);
             }
         }
         counter += 1;
